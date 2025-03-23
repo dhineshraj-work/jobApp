@@ -1,0 +1,5 @@
+package com.dhinesh.loginService.dto;
+
+public class OTPRequest {
+
+}

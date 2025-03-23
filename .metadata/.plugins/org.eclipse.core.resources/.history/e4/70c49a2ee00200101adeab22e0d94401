@@ -1,0 +1,49 @@
+package com.jobapp.loginService.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jobapp.loginService.dto.AuthRequest;
+import com.jobapp.loginService.dto.JwtResponse;
+import com.jobapp.loginService.model.UserModel;
+import com.jobapp.loginService.service.JwtService;
+
+
+
+@RestController
+@RequestMapping("/job/public")
+public class LoginController {
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private JwtService jwtService;
+	
+	@PostMapping("login")
+	public ResponseEntity<Object> login(@RequestBody AuthRequest authRequest){
+		try {
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
+			if(authentication.isAuthenticated()) {
+				String token = jwtService.generateToken(authRequest.getEmail());
+				return ResponseEntity.ok(new JwtResponse(token, 200));
+			}
+			return ResponseEntity.status(401).body("Bad Credentials");
+		}catch(Exception e) {
+			return ResponseEntity.status(401).body(e);
+		}
+	}
+	
+	@GetMapping("body")
+	public ResponseEntity<Object> body(){
+		return ResponseEntity.ok(new UserModel());
+	}
+}

@@ -1,0 +1,10 @@
+package com.dhinesh.loginService.model;
+
+public class Snippet {
+	public Date currentDate() {
+			
+			CustomDateModel dateModel = new CustomDateModel(new Date(System.currentTimeMillis()));
+			return dateModel.getDate();
+		}
+}
+

@@ -1,0 +1,14 @@
+package com.dhinesh.loginService.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class OTPService {
+
+	int start = 100000;
+	int end = 999999;
+	
+	public String generateOTP() {
+		
+	}
+}

@@ -1,0 +1,10 @@
+package com.dhinesh.loginService.controller;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "")
+public class UserHistory {
+
+}

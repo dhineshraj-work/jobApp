@@ -1,0 +1,5 @@
+package com.dhinesh.loginService.repo;
+
+public interface UserDetailsRepo {
+
+}

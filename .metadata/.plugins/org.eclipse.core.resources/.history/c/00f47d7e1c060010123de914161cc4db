@@ -1,0 +1,84 @@
+package com.dhinesh.loginService.service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.dhinesh.loginService.model.CustomDateModel;
+import com.dhinesh.loginService.model.Role;
+import com.dhinesh.loginService.model.UserDetailsModel;
+import com.dhinesh.loginService.model.UserHistoryModel;
+import com.dhinesh.loginService.model.UserModel;
+import com.dhinesh.loginService.repo.RoleRepo;
+import com.dhinesh.loginService.repo.UserDetailsRepo;
+import com.dhinesh.loginService.repo.UserRepo;
+
+@Service
+public class RegistrationService {
+	
+	@Autowired
+	UserRepo userRepo;
+	
+	@Autowired
+	UserDetailsRepo userDetailsRepo;
+	
+	@Autowired
+	RoleRepo roleRepo;
+
+	public ResponseEntity<Object> registerNewUser(UserModel user) {
+		try {
+			
+			if(user==null) {
+				return ResponseEntity.status(404).body("User data is missing");
+			}
+			
+			if(userRepo.existsByEmail(user.getEmail())) {
+				return ResponseEntity.status(409).body("The email is already Registered");
+			}
+			
+			UserDetailsModel userDetails = new UserDetailsModel();
+			
+			userDetails.setUser(user);
+			userDetails.setFirstName(user.getUserDetails().getFirstName());
+			userDetails.setMiddleName(user.getUserDetails().getMiddleName());
+			userDetails.setLastName(user.getUserDetails().getLastName());
+			userDetails.setContactNumber(user.getUserDetails().getContactNumber());
+			userDetails.setCurrentStatus(user.getUserDetails().getCurrentStatus());
+			userDetails.setAge(user.getUserDetails().getAge());
+			
+			UserHistoryModel userHistory = new UserHistoryModel();
+			
+			userHistory.setCreateDate(currentDate());
+			userHistory.setLastLoginDate(currentDate());
+			userHistory.setLastPasswordDate(currentDate());
+			userHistory.setUser(user);
+			
+			Role role = new Role(user.getRole().getRoleName());
+			roleRepo.save(role);
+			
+			user.setRole(role);
+			user.setUserDetails(userDetails);
+			user.setUserHistory(userHistory);
+			
+			user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+			
+			userRepo.save(user);
+			
+			return ResponseEntity.status(201).body("User Successfully Registered");
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body("Something went wrong" + e);
+		}
+	}
+	
+	public Date currentDate() {
+		
+		CustomDateModel dateModel = new CustomDateModel(new Date(System.currentTimeMillis()));
+		return dateModel.getDate();
+	}
+
+}
