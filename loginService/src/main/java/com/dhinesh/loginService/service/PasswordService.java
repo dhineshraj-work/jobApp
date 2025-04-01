@@ -1,16 +1,17 @@
 package com.dhinesh.loginService.service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dhinesh.loginService.model.CustomDateModel;
 import com.dhinesh.loginService.model.UserHistoryModel;
 import com.dhinesh.loginService.model.UserModel;
 import com.dhinesh.loginService.repo.UserRepo;
+
 
 @Service
 public class PasswordService {
@@ -20,6 +21,9 @@ public class PasswordService {
 	
 	@Autowired
 	OTPService otpService;
+	
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
 
 	public ResponseEntity<Object> getPasswordResetOTP(String email) {
 		try {
@@ -49,7 +53,7 @@ public class PasswordService {
 			}
 			UserModel user = userRepo.findByEmail(email).orElse(null);
 			if(user.getUserHistory().getOtp().equals(otp)) {
-				user.setPassword(new BCryptPasswordEncoder().encode(password));
+				user.setPassword(passwordEncoder.encode(password));
 				user.getUserHistory().setLastPasswordDate(currentDate());
 				userRepo.save(user);
 				return ResponseEntity.ok("OTP validated & Password changed");
@@ -62,8 +66,6 @@ public class PasswordService {
 	}
 	
 	public String currentDate() {
-		
-		CustomDateModel dateModel = new CustomDateModel(new Date(System.currentTimeMillis()));
-		return dateModel.toString();
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
 }

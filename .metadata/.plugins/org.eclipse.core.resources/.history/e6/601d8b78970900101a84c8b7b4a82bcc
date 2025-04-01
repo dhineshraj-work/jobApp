@@ -1,0 +1,68 @@
+package com.dhinesh.loginService.service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.dhinesh.loginService.model.UserHistoryModel;
+import com.dhinesh.loginService.model.UserModel;
+import com.dhinesh.loginService.repo.UserRepo;
+
+
+@Service
+public class PasswordService {
+	
+	@Autowired
+	UserRepo userRepo;
+	
+	OTPService otpService;
+
+	public ResponseEntity<Object> getPasswordResetOTP(String email) {
+		try {
+			if(!userRepo.existsByEmail(email)) {
+				return ResponseEntity.status(404).body("User not found for the email provided");
+			}
+			UserModel user = userRepo.findByEmail(email).orElse(null);
+			String otp = otpService.generateOTP();
+			
+			UserHistoryModel userHistory = user.getUserHistory();
+			userHistory.setOtp(otp);
+			user.setUserHistory(userHistory);
+			
+			userRepo.save(user);
+			
+			return ResponseEntity.ok(otp);
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body("Something went wrong  "+e);
+		}
+	}
+
+	public ResponseEntity<Object> vaildateOTP(String email, String otp, String password) {
+		try {
+			if(!userRepo.existsByEmail(email)) {
+				return ResponseEntity.status(404).body("User not found for the email provided");
+			}
+			UserModel user = userRepo.findByEmail(email).orElse(null);
+			if(user.getUserHistory().getOtp().equals(otp)) {
+				user.setPassword(new BCryptPasswordEncoder().encode(password));
+				user.getUserHistory().setLastPasswordDate(currentDate());
+				userRepo.save(user);
+				return ResponseEntity.ok("OTP validated & Password changed");
+			}
+			return ResponseEntity.status(400).body("Not a valid OTP");
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body("Something went wrong  "+e);
+		}
+	}
+	
+	public String currentDate() {
+		
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+	}
+}

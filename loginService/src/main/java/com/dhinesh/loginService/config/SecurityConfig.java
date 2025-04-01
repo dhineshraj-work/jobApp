@@ -31,7 +31,7 @@ public class SecurityConfig {
 	public AuthenticationProvider authProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setUserDetailsService(userDetailsService);
-		provider.setPasswordEncoder(new BCryptPasswordEncoder());
+		provider.setPasswordEncoder(passwordEncoder());
 		return provider;
 	}
 	
@@ -44,6 +44,11 @@ public class SecurityConfig {
 					.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 					.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 					.build();
+	}
+	
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean

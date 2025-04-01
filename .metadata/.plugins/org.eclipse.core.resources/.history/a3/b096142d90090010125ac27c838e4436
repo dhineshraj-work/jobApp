@@ -1,0 +1,14 @@
+package com.dhinesh.loginService.model;
+
+public enum Role {
+
+	ADMIN,		   // System administrator
+	STUDENT,	   // Students just posting things
+    EMPLOYER,      // Company posting jobs
+    JOB_SEEKER,    // User looking for jobs
+    MODERATOR,     // Manages job listings & reports
+    RECRUITER,     // Hires for multiple employers
+    HR_MANAGER,    // Internal hiring manager
+    INTERVIEWER,   // Conducts job interviews
+    GUEST          // Browsing without registration
+}

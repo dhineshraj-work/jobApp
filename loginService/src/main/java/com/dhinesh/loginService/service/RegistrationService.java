@@ -1,18 +1,16 @@
 package com.dhinesh.loginService.service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dhinesh.loginService.model.CustomDateModel;
-import com.dhinesh.loginService.model.Role;
 import com.dhinesh.loginService.model.UserDetailsModel;
 import com.dhinesh.loginService.model.UserHistoryModel;
 import com.dhinesh.loginService.model.UserModel;
-import com.dhinesh.loginService.repo.RoleRepo;
 import com.dhinesh.loginService.repo.UserDetailsRepo;
 import com.dhinesh.loginService.repo.UserRepo;
 
@@ -26,7 +24,7 @@ public class RegistrationService {
 	UserDetailsRepo userDetailsRepo;
 	
 	@Autowired
-	RoleRepo roleRepo;
+	BCryptPasswordEncoder passwordEncoder;
 
 	public ResponseEntity<Object> registerNewUser(UserModel user) {
 		
@@ -40,6 +38,10 @@ public class RegistrationService {
 				return ResponseEntity.status(409).body("The email is already Registered");
 			}
 			
+			if(user.getRole()==null) {
+				return ResponseEntity.status(400).body("Role Required");
+			}
+			
 			UserDetailsModel userDetails = new UserDetailsModel();
 			
 			userDetails.setUser(user);
@@ -50,7 +52,7 @@ public class RegistrationService {
 			userDetails.setCurrentStatus(user.getUserDetails().getCurrentStatus());
 			userDetails.setSkills(user.getUserDetails().getSkills());
 			userDetails.setAge(user.getUserDetails().getAge());
-			
+		
 			UserHistoryModel userHistory = new UserHistoryModel();
 			
 			userHistory.setCreateDate(currentDate());
@@ -58,28 +60,22 @@ public class RegistrationService {
 			userHistory.setLastPasswordDate(currentDate());
 			userHistory.setUser(user);
 			
-			Role role = new Role(user.getRole().getRoleName());
-			roleRepo.save(role);
-			
-			user.setRole(role);
+			user.setRole(user.getRole());
 			user.setUserDetails(userDetails);
 			user.setUserHistory(userHistory);
 			
-			user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			
 			userRepo.save(user);
 			
 			return ResponseEntity.status(201).body("User Successfully Registered");
-			
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body("Something went wrong" + e);
 		}
 	}
 	
 	public String currentDate() {
-		
-		CustomDateModel dateModel = new CustomDateModel(new Date(System.currentTimeMillis()));
-		return dateModel.toString();
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
 
 }

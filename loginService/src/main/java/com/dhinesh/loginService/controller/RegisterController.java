@@ -2,11 +2,13 @@ package com.dhinesh.loginService.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dhinesh.loginService.dto.EmailRequest;
 import com.dhinesh.loginService.model.UserModel;
 import com.dhinesh.loginService.repo.UserRepo;
 import com.dhinesh.loginService.service.RegistrationService;
@@ -28,5 +30,15 @@ public class RegisterController {
 
 		return registrationService.registerNewUser(user);
 		
+	}
+	
+	@DeleteMapping("delete")
+	public ResponseEntity<String> deleteUser(@RequestBody EmailRequest request){
+		
+		if(!userRepo.existsByEmail(request.getEmail())) {
+			return ResponseEntity.status(404).body("User not Found ");
+		}
+		userRepo.deleteByEmail(request.getEmail());
+		return ResponseEntity.ok("User Deleted");
 	}
 }

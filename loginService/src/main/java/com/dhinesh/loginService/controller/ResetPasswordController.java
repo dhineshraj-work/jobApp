@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dhinesh.loginService.dto.EmailRequest;
 import com.dhinesh.loginService.dto.OTPRequest;
-import com.dhinesh.loginService.dto.PasswordResetRequest;
 import com.dhinesh.loginService.service.PasswordService;
 
 @RestController
@@ -19,7 +19,7 @@ public class ResetPasswordController {
 	PasswordService passwordService;
 
 	@PostMapping("password")
-	public ResponseEntity<Object> resetPassword(@RequestBody PasswordResetRequest request){
+	public ResponseEntity<Object> resetPassword(@RequestBody EmailRequest request){
 		return passwordService.getPasswordResetOTP(request.getEmail());
 	}
 	

@@ -1,13 +1,13 @@
 package com.dhinesh.loginService.controller;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dhinesh.loginService.dto.AuthRequest;
 import com.dhinesh.loginService.dto.JwtResponse;
-import com.dhinesh.loginService.model.Role;
-import com.dhinesh.loginService.model.UserDetailsModel;
-import com.dhinesh.loginService.model.UserHistoryModel;
 import com.dhinesh.loginService.model.UserModel;
 import com.dhinesh.loginService.repo.UserRepo;
-import com.dhinesh.loginService.model.CustomDateModel;
 import com.dhinesh.loginService.service.JwtService;
 
 
@@ -49,8 +45,8 @@ public class LoginController {
 				userRepo.save(userModel);
 				
 				String token = jwtService.generateToken(authRequest.getEmail());
-				return ResponseEntity.ok(new JwtResponse(token, 200));
-				//return ResponseEntity.ok(userRepo.findByEmail(authRequest.getEmail()).orElse(null));
+				//return ResponseEntity.ok(new JwtResponse(token, 200));
+				return ResponseEntity.ok(userRepo.findByEmail(authRequest.getEmail()).orElse(null));
 			}
 			return ResponseEntity.status(401).body("Bad Credentials");
 		}catch(Exception e) {
@@ -60,12 +56,6 @@ public class LoginController {
 	
 	public String currentDate() {
 		
-		CustomDateModel dateModel = new CustomDateModel(new Date(System.currentTimeMillis()));
-		return dateModel.toString();
-	}
-	
-	@GetMapping("body")
-	public ResponseEntity<Object> body(){
-		return ResponseEntity.ok(new UserHistoryModel());
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
 }

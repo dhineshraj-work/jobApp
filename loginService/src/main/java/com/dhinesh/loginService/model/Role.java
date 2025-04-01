@@ -1,39 +1,14 @@
 package com.dhinesh.loginService.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+public enum Role {
 
-@Entity
-public class Role {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//@JsonIgnore
-	private Long roleId;
-	
-	
-	private String roleName;
-	
-	public Role() {
-	}
-	
-	public Role(String roleName) {
-		this.roleName = roleName;
-	}
-	public Long getRoleId() {
-		return roleId;
-	}
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
-	public String getRoleName() {
-		return roleName;
-	}
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-	
-	
+	ADMIN,		   // System administrator(all access)
+	STUDENT,	   // Students just posting Updates (can post updates about life and project)
+    EMPLOYER,      // Company posting jobs (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
+    JOB_SEEKER,    // User looking for jobs (can post updates about life and project and apply for job)
+    MODERATOR,     // Manages job listings & reports
+    RECRUITER,     // Hires for multiple employers (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
+    HR_MANAGER,    // Internal hiring manager (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
+    INTERVIEWER,   // Conducts job interviews (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
+    GUEST          // Browsing without registration (cannot add or update job. Can do just browsing like can see jobs)
 }

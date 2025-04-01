@@ -1,5 +1,0 @@
-package com.dhinesh.loginService.controller;
-
-public class ResetPassword {
-
-}

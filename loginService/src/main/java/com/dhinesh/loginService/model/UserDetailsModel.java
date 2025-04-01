@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +20,7 @@ public class UserDetailsModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	//@JsonIgnore
-	private Integer id;
+	private Integer userDetailsId;
 	
 	@OneToOne
 	@JoinColumn(name="user_id", referencedColumnName = "userId")
@@ -31,6 +32,7 @@ public class UserDetailsModel {
 	private String lastName;
 	private int age;
 	private String currentStatus;
+	@ElementCollection
 	private List<String> skills;
 	private Long contactNumber;
 	
@@ -55,10 +57,10 @@ public class UserDetailsModel {
 
 
 
-	public UserDetailsModel(Integer id, UserModel user, String firstName, String middleName, String lastName, int age,
+	public UserDetailsModel(Integer userDetailsId, UserModel user, String firstName, String middleName, String lastName, int age,
 			String currentStatus, List<String> skills, Long contactNumber) {
 		super();
-		this.id = id;
+		this.userDetailsId = userDetailsId;
 		this.user = user;
 		this.firstName = firstName;
 		this.middleName = middleName;
@@ -69,11 +71,11 @@ public class UserDetailsModel {
 		this.contactNumber = contactNumber;
 	}
 	
-	public Integer getId() {
-		return id;
+	public Integer getUserDetailsId() {
+		return userDetailsId;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+	public void setUserDetailsId(Integer userDetailsId) {
+		this.userDetailsId = userDetailsId;
 	}
 	public UserModel getUser() {
 		return user;

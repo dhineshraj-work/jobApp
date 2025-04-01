@@ -1,6 +1,5 @@
 package com.dhinesh.loginService.model;
 
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
