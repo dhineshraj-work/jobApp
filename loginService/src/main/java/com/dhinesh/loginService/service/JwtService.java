@@ -69,7 +69,7 @@ public class JwtService {
 				.subject(email)
 				.issuedAt(new Date(System.currentTimeMillis()))
 				.expiration(new Date(System.currentTimeMillis() + JWT_VALIDITY_TIME))
-				.signWith(getKey())
+				.signWith(getKey(), Jwts.SIG.HS256)
 				.compact();
 	}
 }

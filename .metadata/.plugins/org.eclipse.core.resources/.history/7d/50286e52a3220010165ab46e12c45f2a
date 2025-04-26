@@ -1,0 +1,43 @@
+package com.dhinesh.loginService.controller;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dhinesh.loginService.dto.AuthRequest;
+import com.dhinesh.loginService.dto.UserModelDto;
+import com.dhinesh.loginService.repo.UserRepo;
+import com.dhinesh.loginService.service.UserPublicService;
+
+
+
+@RestController
+@RequestMapping("/job/public")
+public class UserPublicController {
+	
+	@Autowired
+	UserRepo userRepo;
+	
+	@Autowired
+	UserPublicService publicService;
+
+	@PostMapping("register")
+	public ResponseEntity<Object> register(@RequestBody UserModelDto user){
+		return publicService.registerNewUser(user);
+	}
+	
+	@PostMapping("login")
+	public ResponseEntity<Object> login(@RequestBody AuthRequest authRequest){
+		return publicService.login(authRequest);
+	}
+	
+	public String currentDate() {
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+	}
+}

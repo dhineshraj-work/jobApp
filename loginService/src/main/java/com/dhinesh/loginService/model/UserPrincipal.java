@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserPrincipal implements UserDetails{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private UserModel userModel;
 	
@@ -28,13 +25,11 @@ public class UserPrincipal implements UserDetails{
 
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
 		return userModel.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
 		return userModel.getEmail();
 	}
 

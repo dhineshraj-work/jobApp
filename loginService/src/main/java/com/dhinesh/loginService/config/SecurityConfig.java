@@ -10,19 +10,19 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.dhinesh.loginService.filter.JwtFilter;
+import com.dhinesh.loginService.service.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 	
 	@Autowired
-	UserDetailsService userDetailsService;
+	CustomUserDetailsService userDetailsService;
 	
 	@Autowired
 	JwtFilter jwtFilter;
@@ -40,6 +40,8 @@ public class SecurityConfig {
 		return http.csrf(csrf->csrf.disable())
 					.authorizeHttpRequests(request->request
 							.requestMatchers("/job/public/**").permitAll()
+							.requestMatchers("/job/auth/user/**").hasAuthority("USER")
+							.requestMatchers("/job/auth/admin/**").hasAuthority("ADMIN")
 							.anyRequest().authenticated())
 					.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 					.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

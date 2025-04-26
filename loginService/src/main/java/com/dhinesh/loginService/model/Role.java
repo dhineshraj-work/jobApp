@@ -2,13 +2,8 @@ package com.dhinesh.loginService.model;
 
 public enum Role {
 
-	ADMIN,		   // System administrator(all access)
-	STUDENT,	   // Students just posting Updates (can post updates about life and project)
-    EMPLOYER,      // Company posting jobs (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
-    JOB_SEEKER,    // User looking for jobs (can post updates about life and project and apply for job)
-    MODERATOR,     // Manages job listings & reports
-    RECRUITER,     // Hires for multiple employers (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
-    HR_MANAGER,    // Internal hiring manager (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
-    INTERVIEWER,   // Conducts job interviews (Can add and Update jobs. But cannot delete(need to ask ADMIN to delete))
-    GUEST          // Browsing without registration (cannot add or update job. Can do just browsing like can see jobs)
+	ADMIN,
+	USER,
+    RECRUITER
+    
 }

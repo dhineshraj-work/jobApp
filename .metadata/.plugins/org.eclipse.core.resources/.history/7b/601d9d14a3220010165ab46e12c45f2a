@@ -1,0 +1,99 @@
+package com.dhinesh.loginService.service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.dhinesh.loginService.dto.AuthRequest;
+import com.dhinesh.loginService.dto.JwtResponse;
+import com.dhinesh.loginService.dto.UserModelDto;
+import com.dhinesh.loginService.model.UserHistoryModel;
+import com.dhinesh.loginService.model.UserModel;
+import com.dhinesh.loginService.repo.UserDetailsRepo;
+import com.dhinesh.loginService.repo.UserRepo;
+
+@Service
+public class UserPublicService {
+	
+	@Autowired
+	UserRepo userRepo;
+	
+	@Autowired
+	UserDetailsRepo userDetailsRepo;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private JwtService jwtService;
+
+	public ResponseEntity<Object> registerNewUser(UserModelDto user) {
+		
+		try {
+			
+			if(user==null) {
+				return ResponseEntity.status(404).body("User data is missing");
+			}
+			
+			if(userRepo.existsByEmail(user.getEmail())) {
+				return ResponseEntity.status(409).body("The email is already Registered");
+			}
+			
+			UserModel userModel = new UserModel();
+		
+			UserHistoryModel userHistory = new UserHistoryModel();
+			
+			userHistory.setCreateDate(currentDate());
+			userHistory.setLastLoginDate(currentDate());
+			userHistory.setLastPasswordDate(currentDate());
+			userHistory.setUser(userModel);
+			
+			userModel.setPassword(passwordEncoder.encode(user.getPassword()));
+			userModel.setEmail(user.getEmail());
+			userModel.setCategory(user.getCategory());
+			userModel.setRole(user.getRole());
+			userModel.setUserHistory(userHistory);
+			
+			userRepo.save(userModel);
+			
+			return ResponseEntity.status(201).body("User Successfully Registered");
+			
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body("Something went wrong   " + e);
+		}
+	}
+	
+	public String currentDate() {
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+	}
+
+	public ResponseEntity<Object> login(AuthRequest authRequest) {
+		try {
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
+					(authRequest.getEmail(), authRequest.getPassword()));
+			if(authentication.isAuthenticated()) {
+				
+				UserModel userModel = userRepo.findByEmail(authRequest.getEmail()).orElse(null);
+				userModel.getUserHistory().setLastLoginDate(currentDate());
+				userRepo.save(userModel);
+				
+				String token = jwtService.generateToken(authRequest.getEmail());
+				return ResponseEntity.ok(new JwtResponse(token, 200));
+			}
+			return ResponseEntity.status(401).body("Bad Credentials");
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
+	}
+
+}

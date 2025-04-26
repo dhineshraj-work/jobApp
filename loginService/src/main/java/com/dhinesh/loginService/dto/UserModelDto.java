@@ -1,0 +1,18 @@
+package com.dhinesh.loginService.dto;
+
+import org.springframework.stereotype.Component;
+
+import com.dhinesh.loginService.model.Role;
+import com.dhinesh.loginService.model.UserCategory;
+
+import lombok.Data;
+
+@Component
+@Data
+public class UserModelDto {
+
+	private String email;
+	private String password;
+	private Role role;
+	private UserCategory category;
+}

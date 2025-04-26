@@ -1,0 +1,8 @@
+package com.dhinesh.loginService.model;
+
+
+public enum InitialRole {
+
+	FRESHER,
+	EXPERIENCED
+}

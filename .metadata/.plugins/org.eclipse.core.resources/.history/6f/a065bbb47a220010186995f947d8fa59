@@ -1,0 +1,5 @@
+package com.dhinesh.loginService.model;
+
+public class IntialRole {
+
+}

@@ -1,0 +1,52 @@
+package com.dhinesh.loginService.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.dhinesh.loginService.dto.UserDetailsDto;
+import com.dhinesh.loginService.model.UserDetailsModel;
+import com.dhinesh.loginService.model.UserModel;
+import com.dhinesh.loginService.repo.UserRepo;
+
+@Service
+public class UserDetailsUpdateService {
+	
+	@Autowired
+	UserRepo userRepo;
+
+	public ResponseEntity<String> updateDetails(String username, UserDetailsDto user)throws UsernameNotFoundException {
+		try {
+			
+			UserModel userModel = userRepo.findByEmail(username).orElseThrow();
+			
+			if(user==null) {
+				return ResponseEntity.status(404).body("User data is missing");
+			}
+			
+			UserDetailsModel userDetails = new UserDetailsModel();
+			
+			userDetails.setUser(userModel);
+			userDetails.setFirstName(user.getFirstName());
+			userDetails.setMiddleName(user.getMiddleName());
+			userDetails.setLastName(user.getLastName());
+			userDetails.setContactNumber(user.getContactNumber());
+			userDetails.setCurrentStatus(user.getCurrentStatus());
+			userDetails.setSkills(user.getSkills());
+			userDetails.setAge(user.getAge());
+			
+			userModel.setUserDetails(userDetails);
+			
+			userRepo.save(userModel);
+			
+			return ResponseEntity.ok("Details Updated");
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body("Something went wrong   " + e);
+		}
+	}
+
+	
+
+	
+}

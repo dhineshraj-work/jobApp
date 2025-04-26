@@ -1,0 +1,40 @@
+package com.dhinesh.loginService.controller;
+
+import java.security.Principal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dhinesh.loginService.dto.EmailRequest;
+import com.dhinesh.loginService.model.UserModel;
+import com.dhinesh.loginService.repo.UserRepo;
+
+@RestController
+@RequestMapping("/job/auth/admin")
+public class UserAdminController {
+	
+	@Autowired
+	UserRepo userRepo;
+
+	@DeleteMapping("/delete")
+	public ResponseEntity<String> deleteUser(Principal principal, @RequestBody EmailRequest request){
+		
+		if(!userRepo.existsByEmail(request.getEmail())) {
+			return ResponseEntity.status(404).body("User not Found ");
+		}
+		
+		UserModel userModel = userRepo.findByEmail(principal.getName()).orElse(null);
+		
+		if(!"ADMIN".equals(userModel.getRole().name())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can't access  "+userModel.getRole().name());
+		}
+		
+		userRepo.deleteByEmail(request.getEmail());
+		return ResponseEntity.ok("User Deleted");
+	}
+}
